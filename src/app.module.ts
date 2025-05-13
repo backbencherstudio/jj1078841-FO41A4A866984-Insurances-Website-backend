@@ -21,6 +21,10 @@ import { BullModule } from '@nestjs/bullmq';
 import { ChatModule } from './modules/chat/chat.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { SendEmailModule } from './modules/home/send_email/send_email.module';
+import { NewClaimInsuranceModule } from './modules/new-claim-insurance/new-claim-insurance.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { MyClaimsModule } from './modules/my-claims/my-claims.module';
+import { UserProfileModule } from './modules/user-profile/user-profile.module';
 
 @Module({
   imports: [
@@ -68,6 +72,10 @@ import { SendEmailModule } from './modules/home/send_email/send_email.module';
     ChatModule,
     PaymentModule,
     SendEmailModule,
+    NewClaimInsuranceModule,
+    DashboardModule,
+    MyClaimsModule,
+    UserProfileModule,
   ],
   controllers: [AppController],
   providers: [

@@ -236,6 +236,7 @@ export class AuthService {
     name,
     first_name,
     last_name,
+    phone_number,
     email,
     password,
     type,
@@ -243,6 +244,7 @@ export class AuthService {
     name: string;
     first_name: string;
     last_name: string;
+    phone_number: string;
     email: string;
     password: string;
     type?: string;
@@ -265,6 +267,7 @@ export class AuthService {
         name: name,
         first_name: first_name,
         last_name: last_name,
+        phone_number: phone_number,
         email: email,
         password: password,
         type: type,
@@ -278,41 +281,41 @@ export class AuthService {
       }
 
       // create stripe customer account
-      const stripeCustomer = await StripePayment.createCustomer({
-        user_id: user.data.id,
-        email: email,
-        name: name,
-      });
+      // const stripeCustomer = await StripePayment.createCustomer({
+      //   user_id: user.data.id,
+      //   email: email,
+      //   name: name,
+      // });
 
-      if (stripeCustomer) {
-        await this.prisma.user.update({
-          where: {
-            id: user.data.id,
-          },
-          data: {
-            billing_id: stripeCustomer.id,
-          },
-        });
-      }
+      // if (stripeCustomer) {
+      //   await this.prisma.user.update({
+      //     where: {
+      //       id: user.data.id,
+      //     },
+      //     data: {
+      //       billing_id: stripeCustomer.id,
+      //     },
+      //   });
+      // }
 
       // ----------------------------------------------------
       // // create otp code
-      // const token = await UcodeRepository.createToken({
-      //   userId: user.data.id,
-      //   isOtp: true,
-      // });
+      const otp_token = await UcodeRepository.createToken({
+        userId: user.data.id,
+        isOtp: true,
+      });
 
       // // send otp code to email
-      // await this.mailService.sendOtpCodeToEmail({
-      //   email: email,
-      //   name: name,
-      //   otp: token,
-      // });
+      await this.mailService.sendOtpCodeToEmail({
+        email: email,
+        name: first_name || name || email, // Use first_name if available, fallback to name, then email
+        otp: otp_token,
+      });
 
-      // return {
-      //   success: true,
-      //   message: 'We have sent an OTP code to your email',
-      // };
+      return {
+        success: true,
+        message: 'We have sent an OTP code to your email',
+      };
 
       // ----------------------------------------------------
 
