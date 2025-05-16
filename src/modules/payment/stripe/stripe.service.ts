@@ -190,8 +190,8 @@ async constructWebhookEvent(payload: Buffer, signature: string) {
         },
         data: {
           status: subscription.status,
-          current_period_start: new Date(subscription.current_period_start * 1000),
-          current_period_end: new Date(subscription.current_period_end * 1000),
+          current_period_start: new Date((subscription as any).current_period_start * 1000),
+          current_period_end: new Date((subscription as any).current_period_end * 1000),
         },
       });
     } catch (error) {
