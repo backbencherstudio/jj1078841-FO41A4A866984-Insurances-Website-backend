@@ -26,13 +26,12 @@ export class NewClaimInsuranceService {
           status: 'Inspection Scheduled',
           property_address: createNewClaimInsuranceDto.property_address,
           type_of_damage: createNewClaimInsuranceDto.type_of_damage,
-
+          carrier: createNewClaimInsuranceDto.insurance_company, // Add carrier field
           insurance_company: createNewClaimInsuranceDto.insurance_company,
           adjuster: 'Pending Assignment',
           policy_docs: createNewClaimInsuranceDto.policy_docs,
           damage_photos: createNewClaimInsuranceDto.damage_photos || [],
           signed_forms: createNewClaimInsuranceDto.signed_forms,
-          
           carrier_correspondence: createNewClaimInsuranceDto.carrier_correspondence,
           date_of_loss: dateOfLoss,
           policy_number: createNewClaimInsuranceDto.policy_number,
