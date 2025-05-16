@@ -369,6 +369,7 @@ model Claim {
   deleted_at            DateTime?
   user_id              String
   claim_number         String
+  carrier               String
   status              String
   property_address    String @default("not provided")
   type_of_damage      String @default("not provided")
