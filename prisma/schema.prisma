@@ -72,6 +72,8 @@ model User {
 
   claims                    Claim[]  
 
+  subscriptions         Subscription[]
+
   @@map("users")
 }
 
@@ -209,6 +211,9 @@ model PaymentTransaction {
   currency         String?
   paid_amount      Decimal?
   paid_currency    String?
+  invoice_url      String?   // Add this field for Stripe invoice URLs
+  customer_id      String?   // Add this field for Stripe customer ID
+  session_id       String?   // Add this field for Stripe session ID
   user             User?     @relation(fields: [user_id], references: [id])
 
   @@map("payment_transactions")
@@ -383,4 +388,23 @@ model Claim {
   user               User     @relation(fields: [user_id], references: [id])
 
   @@map("claims")
+}
+
+
+model Subscription {
+  id                    String    @id @default(cuid())
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @default(now())
+  deleted_at            DateTime?
+  user_id              String
+  stripe_customer_id    String
+  stripe_subscription_id String   @unique
+  status               String    // active, canceled, past_due, etc.
+  plan_type            String    // monthly or yearly
+  current_period_start DateTime
+  current_period_end   DateTime
+  cancel_at_period_end Boolean   @default(false)
+  user                 User      @relation(fields: [user_id], references: [id])
+
+  @@map("subscriptions")
 }
