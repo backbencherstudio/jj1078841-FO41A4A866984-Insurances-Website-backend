@@ -13,8 +13,10 @@ export class DashboardService {
 
   async getClaimSummary(claimNumber: string) {
     try {
-      const claim = await this.prisma.claim.findUnique({
-        where: { claim_number: claimNumber },
+      const claim = await this.prisma.claim.findFirst({
+        where: { 
+          claim_number: claimNumber 
+        },
         select: {
           claim_number: true,
           status: true,
