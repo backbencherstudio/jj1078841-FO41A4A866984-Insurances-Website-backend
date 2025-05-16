@@ -14,7 +14,6 @@ import { MailProcessor } from './processors/mail.processor';
       // or
       transport: {
         host: appConfig().mail.host,
-        port: +appConfig().mail.port,
         secure: false,
         auth: {
           user: appConfig().mail.user,

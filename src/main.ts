@@ -11,12 +11,16 @@ import { AppModule } from './app.module';
 import { CustomExceptionFilter } from './common/exception/custom-exception.filter';
 import appConfig from './config/app.config';
 import { SojebStorage } from './common/lib/Disk/SojebStorage';
+import { initializeUploadDirectories } from './common/utils/upload.utils';
 // import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
   });
+
+  // Initialize upload directories
+  initializeUploadDirectories();
 
   // Handle raw body for webhooks
   // app.use('/payment/stripe/webhook', express.raw({ type: 'application/json' }));
@@ -31,6 +35,11 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'public/storage'), {
     index: false,
     prefix: '/storage',
+  });
+  // Add uploads directory for claim documents
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    index: false,
+    prefix: '/uploads',
   });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new CustomExceptionFilter());

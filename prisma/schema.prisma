@@ -28,66 +28,60 @@ model Account {
 }
 
 model User {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-  status     Int?      @default(1) @db.SmallInt
-
-  approved_at  DateTime?
-  availability String?
-
-  email      String? @unique
-  username   String? @unique
-  name       String? @db.VarChar(255)
-  first_name String? @db.VarChar(255)
-  last_name  String? @db.VarChar(255)
-  password   String? @db.VarChar(255)
-  domain     String? @unique
-  avatar     String?
-
-  phone_number  String?
-  country       String?
-  state         String?
-  city          String?
-  address       String?
-  zip_code      String?
-  gender        String?
-  date_of_birth DateTime? @db.Date
-
-  // billing id. e.g. stripe customer id
-  billing_id String?
-
-  type              String?   @default("user")
-  email_verified_at DateTime?
-
-  is_two_factor_enabled Int?    @default(0)
-  two_factor_secret     String? // secret key for two factor authentication
-
+  id                        String               @id @default(cuid())
+  created_at                DateTime             @default(now())
+  updated_at                DateTime             @default(now())
+  deleted_at                DateTime?
+  status                    Int?                 @default(1) @db.SmallInt
+  approved_at               DateTime?
+  availability              String?
+  email                     String?              @unique
+  username                  String?              @unique
+  name                      String?              @db.VarChar(255)
+  first_name                String?              @db.VarChar(255)
+  last_name                 String?              @db.VarChar(255)
+  password                  String?              @db.VarChar(255)
+  domain                    String?              @unique
+  avatar                    String?
+  phone_number              String?
+  country                   String?
+  state                     String?
+  city                      String?
+  address                   String?
+  zip_code                  String?
+  gender                    String?
+  date_of_birth             DateTime?            @db.Date
+  billing_id                String?
+  type                      String?              @default("user")
+  email_verified_at         DateTime?
+  is_two_factor_enabled     Int?                 @default(0)
+  two_factor_secret         String?
   accounts                  Account[]
-  creator_conversations     Conversation[] @relation("creator")
-  participant_conversations Conversation[] @relation("participant")
-  receiver_messages         Message[]      @relation("receiver")
-  sender_messages           Message[]      @relation("sender")
-  receiver_notifications    Notification[] @relation("receiver")
-  sender_notifications      Notification[] @relation("sender")
+  creator_conversations     Conversation[]       @relation("creator")
+  participant_conversations Conversation[]       @relation("participant")
+  receiver_messages         Message[]            @relation("receiver")
+  sender_messages           Message[]            @relation("sender")
+  receiver_notifications    Notification[]       @relation("receiver")
+  sender_notifications      Notification[]       @relation("sender")
+  payment_transactions      PaymentTransaction[]
+  role_users                RoleUser[]
+  roles                     Role[]
+  ucodes                    Ucode[]
+  user_payment_methods      UserPaymentMethod[]
+  user_settings             UserSetting[]
 
-  user_payment_methods UserPaymentMethod[]
-  user_settings        UserSetting[]
-  ucodes               Ucode[]
-  roles                Role[]
-  role_users           RoleUser[]
-  payment_transactions PaymentTransaction[]
+  claims                    Claim[]  
+
+  subscriptions         Subscription[]
 
   @@map("users")
 }
 
 model Ucode {
-  id         String   @id @default(cuid())
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-  status     Int?     @default(1) @db.SmallInt
-
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  status     Int?      @default(1) @db.SmallInt
   user_id    String?
   token      String?
   email      String?
@@ -98,11 +92,10 @@ model Ucode {
 }
 
 model Role {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
+  id               String           @id @default(cuid())
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @default(now())
+  deleted_at       DateTime?
   status           Int?             @default(1) @db.SmallInt
   title            String?
   name             String?
@@ -116,11 +109,10 @@ model Role {
 }
 
 model Permission {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
+  id               String           @id @default(cuid())
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @default(now())
+  deleted_at       DateTime?
   status           Int?             @default(1) @db.SmallInt
   title            String?
   action           String?
@@ -134,9 +126,8 @@ model Permission {
 }
 
 model PermissionRole {
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @default(now())
   permission_id String
   role_id       String
   permission    Permission @relation(fields: [permission_id], references: [id], onDelete: Cascade)
@@ -149,22 +140,20 @@ model PermissionRole {
 model RoleUser {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-
-  role_id String
-  user_id String
-  role    Role   @relation(fields: [role_id], references: [id], onDelete: Cascade)
-  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role_id    String
+  user_id    String
+  role       Role     @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@id([role_id, user_id])
   @@map("role_users")
 }
 
 model NotificationEvent {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
+  id            String         @id @default(cuid())
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @default(now())
+  deleted_at    DateTime?
   status        Int?           @default(1) @db.SmallInt
   type          String?
   text          String?
@@ -174,11 +163,10 @@ model NotificationEvent {
 }
 
 model Notification {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
+  id                    String             @id @default(cuid())
+  created_at            DateTime           @default(now())
+  updated_at            DateTime           @default(now())
+  deleted_at            DateTime?
   status                Int?               @default(1) @db.SmallInt
   sender_id             String?
   receiver_id           String?
@@ -223,16 +211,12 @@ model PaymentTransaction {
   currency         String?
   paid_amount      Decimal?
   paid_currency    String?
+  invoice_url      String?   // Add this field for Stripe invoice URLs
+  customer_id      String?   // Add this field for Stripe customer ID
+  session_id       String?   // Add this field for Stripe session ID
   user             User?     @relation(fields: [user_id], references: [id])
 
   @@map("payment_transactions")
-}
-
-enum MessageStatus {
-  PENDING
-  SENT
-  DELIVERED
-  READ
 }
 
 model Message {
@@ -288,9 +272,8 @@ model Faq {
   created_at DateTime  @default(now())
   updated_at DateTime  @default(now())
   deleted_at DateTime?
-
-  status     Int?    @default(1) @db.SmallInt
-  sort_order Int?    @default(0)
+  status     Int?      @default(1) @db.SmallInt
+  sort_order Int?      @default(0)
   question   String?
   answer     String?
 
@@ -298,11 +281,10 @@ model Faq {
 }
 
 model Contact {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
+  id           String    @id @default(cuid())
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now())
+  deleted_at   DateTime?
   first_name   String?
   last_name    String?
   email        String?
@@ -317,9 +299,8 @@ model SocialMedia {
   created_at DateTime  @default(now())
   updated_at DateTime  @default(now())
   deleted_at DateTime?
-
-  status     Int?    @default(1) @db.SmallInt
-  sort_order Int?    @default(0)
+  status     Int?      @default(1) @db.SmallInt
+  sort_order Int?      @default(0)
   name       String?
   url        String?
   icon       String?
@@ -328,11 +309,10 @@ model SocialMedia {
 }
 
 model WebsiteInfo {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
+  id                  String    @id @default(cuid())
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @default(now())
+  deleted_at          DateTime?
   name                String?
   phone_number        String?
   email               String?
@@ -346,11 +326,10 @@ model WebsiteInfo {
 }
 
 model Setting {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
+  id            String        @id @default(cuid())
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @default(now())
+  deleted_at    DateTime?
   category      String?
   label         String?
   description   String?
@@ -366,28 +345,66 @@ model UserSetting {
   created_at DateTime  @default(now())
   updated_at DateTime  @default(now())
   deleted_at DateTime?
-
   user_id    String?
   setting_id String?
   value      String?
-  setting    Setting? @relation(fields: [setting_id], references: [id])
-  user       User?    @relation(fields: [user_id], references: [id])
+  setting    Setting?  @relation(fields: [setting_id], references: [id])
+  user       User?     @relation(fields: [user_id], references: [id])
 
   @@map("user_settings")
 }
 
-// this table stores example
-// model Note {
-//   id                String  @id @default(cuid())
-//   created_at DateTime  @default(now())
-//   updated_at DateTime  @default(now())
-//   deleted_at DateTime?
-//   status     Int?      @default(1) @db.SmallInt
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  READ
+}
 
-//   title String?
-//   body  String? @db.Text
 
-//   tenant_id Int?
-//   tenant    Organization? @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-//   @@map("posts")
-// }
+model Claim {
+  id                    String    @id @default(cuid())
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @default(now())
+  deleted_at            DateTime?
+  user_id              String
+  claim_number         String
+  status              String
+  property_address    String @default("not provided")
+  type_of_damage      String @default("not provided")
+  insurance_company   String @default("unknown")
+  policy_number       String @default("unknown")
+  adjuster            String @default("unknown")
+  policy_docs         String?
+  damage_photos       String[]
+  signed_forms        String?
+  carrier_correspondence String?
+  date_of_loss        DateTime
+  acv_status         String?
+  rcv_status         String?
+  depreciation_status String?
+  mortgage_status    String?
+  last_updated       DateTime
+  user               User     @relation(fields: [user_id], references: [id])
+
+  @@map("claims")
+}
+
+
+model Subscription {
+  id                    String    @id @default(cuid())
+  created_at            DateTime  @default(now())
+  updated_at            DateTime  @default(now())
+  deleted_at            DateTime?
+  user_id              String
+  stripe_customer_id    String
+  stripe_subscription_id String   @unique
+  status               String    // active, canceled, past_due, etc.
+  plan_type            String    // monthly or yearly
+  current_period_start DateTime
+  current_period_end   DateTime
+  cancel_at_period_end Boolean   @default(false)
+  user                 User      @relation(fields: [user_id], references: [id])
+
+  @@map("subscriptions")
+}
