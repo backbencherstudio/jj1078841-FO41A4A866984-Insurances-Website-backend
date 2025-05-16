@@ -107,8 +107,8 @@ async constructWebhookEvent(payload: Buffer, signature: string) {
             stripe_subscription_id: session.subscription as string,
             status: subscription.status,
             plan_type: subscription.items.data[0].price.nickname || 'monthly',
-            current_period_start: new Date(subscription.current_period_start * 1000),
-            current_period_end: new Date(subscription.current_period_end * 1000),
+            current_period_start: new Date((subscription as any).current_period_start * 1000),
+            current_period_end: new Date((subscription as any).current_period_end * 1000),
           },
         });
 
