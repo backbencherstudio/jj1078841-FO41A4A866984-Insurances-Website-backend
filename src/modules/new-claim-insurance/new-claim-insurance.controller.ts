@@ -81,7 +81,7 @@ export class NewClaimInsuranceController {
       }
       if (files.damage_photos) {
         createNewClaimInsuranceDto.damage_photos = files.damage_photos.map(file => file.filename);
-      }
+      }3
       if (files.signed_forms?.[0]) {
         createNewClaimInsuranceDto.signed_forms = files.signed_forms[0].filename;
       }
