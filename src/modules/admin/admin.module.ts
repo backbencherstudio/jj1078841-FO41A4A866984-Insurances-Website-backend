@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { NotificationModule } from './notification/notification.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { UserManagementModule } from './user-management/user-management.module';
+import { ClaimsHistoryModule } from './claims-history/claims-history.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserManagementModule } from './user-management/user-management.module';
     NotificationModule,
     DashboardModule,
     UserManagementModule,
+    ClaimsHistoryModule,
   ],
 })
 export class AdminModule {}

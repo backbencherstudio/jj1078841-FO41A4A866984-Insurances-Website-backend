@@ -216,6 +216,9 @@ model PaymentTransaction {
   session_id       String?   // Add this field for Stripe session ID
   user             User?     @relation(fields: [user_id], references: [id])
 
+  claim_id        String?
+  claim           Claim?    @relation(fields: [claim_id], references: [id])
+
   @@map("payment_transactions")
 }
 
@@ -387,6 +390,8 @@ model Claim {
   mortgage_status    String?
   last_updated       DateTime
   user               User     @relation(fields: [user_id], references: [id])
+
+   payments        PaymentTransaction[]
 
   @@map("claims")
 }
