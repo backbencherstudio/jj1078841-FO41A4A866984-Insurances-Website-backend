@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDashboardDto } from './dto/create-dashboard.dto';
-import { UpdateDashboardDto } from './dto/update-dashboard.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -10,112 +8,108 @@ export class DashboardService {
   async findAll(period: 'monthly' | 'yearly' = 'monthly') {
     const totalMembers = await this.prisma.user.count({
       where: {
-        deleted_at: null,
         type: 'user'
       }
     });
 
-    let revenueData;
-    if (period === 'monthly') {
-      revenueData = await this.getMonthlyRevenueData();
-    } else {
-      revenueData = await this.getYearlyRevenueData();
+    const totalClaims = await this.prisma.claim.count();
+
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+    const monthlyRevenue = await this.prisma.paymentTransaction.aggregate({
+      _sum: {
+        amount: true
+      },
+      where: {
+        status: 'succeeded',
+        created_at: {
+          gte: firstDayOfMonth,
+          lte: lastDayOfMonth
+        }
+      }
+    });
+
+    let revenueData = [];
+    if (period === 'yearly') {
+      const currentYear = currentDate.getFullYear();
+      revenueData = await Promise.all(
+        Array.from({ length: 12 }, async (_, month) => {
+          const startDate = new Date(currentYear, month, 1);
+          const endDate = new Date(currentYear, month + 1, 0);
+
+          const revenue = await this.prisma.paymentTransaction.aggregate({
+            _sum: {
+              amount: true
+            },
+            where: {
+              status: 'succeeded',
+              created_at: {
+                gte: startDate,
+                lte: endDate
+              }
+            }
+          });
+
+          return {
+            month: new Date(currentYear, month).toLocaleString('default', { month: 'short' }),
+            revenue: revenue._sum.amount || 0
+          };
+        })
+      );
+    } else if (period === 'monthly') {
+      const daysInMonth = lastDayOfMonth.getDate();
+      revenueData = await Promise.all(
+        Array.from({ length: daysInMonth }, async (_, day) => {
+          const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day + 1);
+          const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day + 2);
+
+          const revenue = await this.prisma.paymentTransaction.aggregate({
+            _sum: {
+              amount: true
+            },
+            where: {
+              status: 'succeeded',
+              created_at: {
+                gte: startDate,
+                lte: endDate
+              }
+            }
+          });
+
+          return {
+            day: `${day + 1}`,
+            revenue: revenue._sum.amount || 0
+          };
+        })
+      );
     }
+
+    const recentClaims = await this.prisma.claim.findMany({
+      select: {
+        id: true,
+        policy_number: true,
+        type_of_damage: true,
+        insurance_company: true,
+        date_of_loss: true,
+        status: true
+      },
+      orderBy: {
+        created_at: 'desc'
+      },
+      take: 4
+    });
 
     return {
       overview: {
         totalMembers,
-        currentRevenue: revenueData.currentRevenue,
+        totalClaims,
+        pendingClaims: totalClaims,
+        monthlyRevenue: monthlyRevenue._sum.amount || 0
       },
-      revenueData: revenueData.data,
-      period: period // Add period to response
-    };
-  }
-
-  private async getMonthlyRevenueData() {
-    const currentDate = new Date();
-    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    const daysInMonth = endOfMonth.getDate();
-    const days = [];
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dayStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), day, 0, 0, 0);
-      const dayEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), day, 23, 59, 59);
-
-      const dailyTransactions = await this.prisma.paymentTransaction.aggregate({
-        where: {
-          deleted_at: null,
-          status: 'completed',
-          created_at: {
-            gte: dayStart,
-            lte: dayEnd,
-          }
-        },
-        _sum: {
-          amount: true
-        }
-      });
-
-      days.push({
-        date: day,
-        revenue: Number(dailyTransactions._sum.amount || 0)
-      });
-    }
-
-    const monthlyTotal = await this.prisma.paymentTransaction.aggregate({
-      where: {
-        deleted_at: null,
-        status: 'completed',
-        created_at: {
-          gte: startOfMonth,
-          lte: endOfMonth,
-        }
-      },
-      _sum: {
-        amount: true
-      }
-    });
-
-    return {
-      currentRevenue: Number(monthlyTotal._sum.amount || 0),
-      data: days
-    };
-  }
-
-  private async getYearlyRevenueData() {
-    const currentYear = new Date().getFullYear();
-    const months = [];
-
-    for (let month = 0; month < 12; month++) {
-      const startDate = new Date(currentYear, month, 1);
-      const endDate = new Date(currentYear, month + 1, 0);
-
-      const monthlyTransactions = await this.prisma.paymentTransaction.aggregate({
-        where: {
-          deleted_at: null,
-          status: 'completed',
-          created_at: {
-            gte: startDate,
-            lte: endDate,
-          }
-        },
-        _sum: {
-          amount: true
-        }
-      });
-
-      months.push({
-        month: startDate.toLocaleString('default', { month: 'short' }),
-        revenue: Number(monthlyTransactions._sum.amount || 0)
-      });
-    }
-
-    const currentMonthRevenue = months[new Date().getMonth()]?.revenue || 0;
-
-    return {
-      currentRevenue: currentMonthRevenue,
-      data: months
+      revenueData,
+      recentClaims
     };
   }
 }
