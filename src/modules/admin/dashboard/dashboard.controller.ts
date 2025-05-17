@@ -1,7 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
-import { CreateDashboardDto } from './dto/create-dashboard.dto';
-import { UpdateDashboardDto } from './dto/update-dashboard.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { Role } from 'src/common/guard/role/role.enum';
 import { RolesGuard } from 'src/common/guard/role/roles.guard';
@@ -16,7 +14,7 @@ export class DashboardController {
   @Get()
   async findAll(@Query('period') period: 'monthly' | 'yearly' = 'monthly') {
     try {
-      return await this.dashboardService.findAll();
+      return await this.dashboardService.findAll(period);
     } catch (error) {
       return {
         status: 400,
@@ -24,5 +22,4 @@ export class DashboardController {
       }
     }
   }
-
 }

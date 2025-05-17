@@ -5,13 +5,14 @@ import { NewClaimInsuranceService } from './new-claim-insurance.service';
 import { CreateNewClaimInsuranceDto } from './dto/create-new-claim-insurance.dto';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { SubscriberGuard } from '../payment/stripe/guards/subscriber.guard';
 
 @Controller('new-claim-insurance')
 export class NewClaimInsuranceController {
   constructor(private readonly newClaimInsuranceService: NewClaimInsuranceService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, SubscriberGuard)
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'policy_docs', maxCount: 1 },
     { name: 'damage_photos', maxCount: 10 },

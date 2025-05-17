@@ -1,6 +1,7 @@
 import { Controller, Get, UseGuards, Request, HttpException, HttpStatus } from '@nestjs/common';
 import { MyClaimsService } from './my-claims.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { SubscriberGuard } from '../payment/stripe/guards/subscriber.guard';
 
 @Controller('dashboard/my-claims')
 export class MyClaimsController {
