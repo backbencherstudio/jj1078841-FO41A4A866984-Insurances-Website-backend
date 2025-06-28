@@ -26,7 +26,17 @@ async function bootstrap() {
   // app.use('/payment/stripe/webhook', express.raw({ type: 'application/json' }));
 
   app.setGlobalPrefix('api');
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      'http://localhost:3000', 
+      'http://127.0.0.1:3000',
+      'https://insurancesally.com',
+      'https://www.insurancesally.com'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  });
   app.use(helmet());
   app.useStaticAssets(join(__dirname, '..', 'public'), {
     index: false,
