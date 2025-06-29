@@ -51,11 +51,17 @@ export class StripeController {
 
       let priceId: string;
       switch (planValue.toLowerCase()) {
-        case 'monthly':
-          priceId = process.env.STRIPE_MONTHLY_PRICE_ID;
+        case 'renter':
+          priceId = process.env.STRIPE_RENTER_PRICE_ID;
           break;
-        case 'yearly':
-          priceId = process.env.STRIPE_YEARLY_PRICE_ID;
+        case 'residential':
+          priceId = process.env.STRIPE_RESIDENTIAL_PRICE_ID;
+          break;
+        case 'commercial':
+          priceId = process.env.STRIPE_COMMERCIAL_PRICE_ID;
+          break;
+        case 'enterprise':
+          priceId = process.env.STRIPE_ENTERPRICE_PRICE_ID;
           break;
         default:
           throw new HttpException('Invalid subscription plan', HttpStatus.BAD_REQUEST);
