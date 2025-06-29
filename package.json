@@ -38,6 +38,7 @@
     "@nestjs/throttler": "6.4.0",
     "@nestjs/websockets": "11.0.17",
     "@prisma/client": "6.6.0",
+    "@sendgrid/mail": "^8.1.5",
     "aws-sdk": "2.1692.0",
     "axios": "1.8.4",
     "bcrypt": "5.1.1",
