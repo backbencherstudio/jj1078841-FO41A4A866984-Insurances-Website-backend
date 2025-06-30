@@ -24,6 +24,7 @@ export class MailProcessor extends WorkerHost {
 
   async process(job: Job): Promise<any> {
     this.logger.log(`Processing job ${job.id} with name ${job.name}`);
+    this.logger.log(job.name)
     try {
       switch (job.name) {
         case 'sendMemberInvitation':

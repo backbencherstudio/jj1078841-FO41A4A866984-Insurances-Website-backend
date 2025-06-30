@@ -11,6 +11,8 @@ export class MailService {
     private mailerService: MailerService,
   ) {}
 
+
+
   async sendMemberInvitation({ user, member, url }) {
     try {
       const from = `${process.env.APP_NAME} <${appConfig().mail.from}>`;
@@ -38,7 +40,7 @@ export class MailService {
     try {
       const from = `${process.env.APP_NAME} <${appConfig().mail.from}>`;
       const subject = 'Email Verification';
-
+      
       // add to queue
       await this.queue.add('sendOtpCodeToEmail', {
         to: email,
