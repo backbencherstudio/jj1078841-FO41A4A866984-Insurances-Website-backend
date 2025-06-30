@@ -29,7 +29,7 @@ export class StripeService {
         },
       ],
       client_reference_id: userId,  // Add this to link the session with the user
-      success_url: `${process.env.CLIENT_APP_URL}/about`,
+      success_url: `${process.env.CLIENT_APP_URL}/membership_plans/claim`,
       cancel_url: `${process.env.CLIENT_APP_URL}/subscription`,
     });
   
