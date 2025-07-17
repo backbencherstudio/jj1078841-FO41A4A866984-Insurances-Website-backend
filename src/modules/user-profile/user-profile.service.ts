@@ -27,6 +27,25 @@ export class UserProfileService {
       // Remove confirm_password from DTO
       const { confirm_password, password, date_of_birth, ...updateData } = updateUserProfileDto;
 
+      // ------------------------------------------------------
+      // Validate e-mail uniqueness (prevent Prisma P2002 error)
+      // ------------------------------------------------------
+      if (updateData.email) {
+        const emailOwner = await this.prisma.user.findFirst({
+          where: {
+            email: updateData.email,
+            NOT: {
+              id: id,
+            },
+          },
+          select: { id: true },
+        });
+
+        if (emailOwner) {
+          throw new BadRequestException('Email already exists');
+        }
+      }
+
       // Convert date_of_birth to ISO format if provided
       let dateOfBirth;
       if (date_of_birth) {
