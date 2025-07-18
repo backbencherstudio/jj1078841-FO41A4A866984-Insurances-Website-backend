@@ -27,7 +27,7 @@ export class UserProfileController {
   @Patch()
   @UseInterceptors(FileInterceptor('avatar', {
     storage: diskStorage({
-      destination: './uploads/avatars',
+      destination: process.cwd() + '/public/storage/avatar',
       filename: (req, file, callback) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
@@ -52,8 +52,7 @@ export class UserProfileController {
     try {
       // If file is uploaded, add the avatar URL to the DTO
       if (file) {
-        const avatarUrl = `/uploads/avatars/${file.filename}`;
-        updateUserProfileDto.avatar = avatarUrl;
+        updateUserProfileDto.avatar = file.filename;
       }
       return await this.userProfileService.update(req.user.userId, updateUserProfileDto);
     } catch (error) {
