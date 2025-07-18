@@ -63,10 +63,12 @@ export class MailService {
     token: string;
     type: string;
   }) {
+    const from = `${process.env.APP_NAME} <${appConfig().mail.from}>`;
     const verificationLink = `${appConfig().app.client_app_url}/verify-email?token=${params.token}&email=${params.email}&type=${params.type}`;
-    console.log(verificationLink);
-    await this.mailerService.sendMail({
+
+    await this.queue.add('sendVerificationLink', {
       to: params.email,
+      from: from,
       subject: 'Verify Your Email',
       template: './verification-link',
       context: {
