@@ -307,8 +307,7 @@ export class AuthService {
 
       // ----------------------------------------------------
 
-      // Generate verification token
-      const token = await UcodeRepository.createVerificationToken({
+      const verificationToken = await UcodeRepository.createVerificationToken({
         userId: user.data.id,
         email: email,
       });
@@ -316,8 +315,8 @@ export class AuthService {
       // Send verification email with token
       await this.mailService.sendVerificationLink({
         email,
-        name: user.data.first_name,
-        token: token.token,
+        name: user.data.first_name ?? name,
+        token: verificationToken,
         type: type,
       });
 

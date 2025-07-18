@@ -144,23 +144,19 @@ export class UcodeRepository {
   static async createVerificationToken(params: {
     userId: string;
     email: string;
-  }) {
-    try {
-      const token = crypto.randomBytes(32).toString('hex');
+  }): Promise<string> {
+    const token = crypto.randomBytes(32).toString('hex');
 
-      const ucode = await prisma.ucode.create({
-        data: {
-          user_id: params.userId,
-          email: params.email,
-          token: token,
-          expired_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-          status: 1,
-        },
-      });
+    await prisma.ucode.create({
+      data: {
+        user_id: params.userId,
+        email: params.email,
+        token: token,
+        expired_at: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+        status: 1,
+      },
+    });
 
-      return ucode;
-    } catch (error) {
-      return null;
-    }
+    return token;
   }
 }
