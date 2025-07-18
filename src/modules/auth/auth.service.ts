@@ -26,34 +26,6 @@ export class AuthService {
         where: {
           id: userId,
         },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          avatar: true,
-          address: true,
-          phone_number: true,
-          type: true,
-          gender: true,
-          date_of_birth: true,
-          created_at: true,
-          subscriptions: {
-            where: {
-              status: 'active',
-              deleted_at: null,
-            },
-            select: {
-              stripe_subscription_id: true,
-              status: true,
-              plan_type: true,
-              current_period_end: true,
-            },
-            orderBy: {
-              created_at: 'desc'
-            },
-            take: 1
-          }
-        },
       });
 
       if (!user) {

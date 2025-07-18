@@ -14,7 +14,7 @@ export class SendEmailService {
       port: this.configService.get<number>('MAIL_PORT'),
       secure: true,
       auth: {
-        user: this.configService.get<string>('mail_username'),
+        user: this.configService.get<string>('MAIL_USERNAME'),
         pass: this.configService.get<string>('MAIL_PASSWORD'),
       },
     });
