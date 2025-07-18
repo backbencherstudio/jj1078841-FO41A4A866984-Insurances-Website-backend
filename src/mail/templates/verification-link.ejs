@@ -1,4 +1,45 @@
-<p>Hello <%= name %>,</p>
-<p>Please click the link below to verify your email:</p>
-<a href="<%= verificationLink %>">Verify Email</a>
-<p>This link will expire in 24 hours.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Insurances Ally</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; 
+margin: 0 auto; background-color: #f9f9f9; padding: 20px;">
+ <div style="background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 5px 
+rgba(0,0,0,0.1);">
+ 
+ <h2 style="color: #1a73e8; text-align: center;">Welcome to Insurances Ally – Take Your First 
+Step Today</h2>
+ <p>Hello <strong><%= name %></strong>,</p>
+ <p>Welcome to <strong>Insurance Ally!</strong> You’ve just taken a big step to protect 
+yourself <em>before</em> a claim ever happens—and you’ve joined a growing group of 
+advocates who are changing the insurance industry.</p>
+ <h3 style="color: #1a73e8;">What This Means for You</h3>
+ <p>✅ <strong>You’re protected.</strong> When a claim happens, you already have 
+professionals ready to fight for you.</p>
+ <p>✅ <strong>You’re not alone.</strong> You’re part of a community standing up for fair 
+treatment.</p>
+ <p>✅ <strong>We’ll keep you informed.</strong> Expect updates, tips, and real success 
+stories from members just like you.</p>
+ <h3 style="color: #1a73e8;">What to Do Next – Act Now</h3>
+ <p>✅ <strong>Log into your account:</strong></p>
+ <p style="text-align: center;">
+ <a href="<%= verificationLink %>" style="display: inline-block; background-color: #1a73e8; color: #ffffff; 
+text-decoration: none; padding: 12px 20px; border-radius: 5px; font-weight: bold;">
+ VERIFY YOUR ACCOUNT NOW
+ </a>
+ </p>
+ <p>✅ <strong>Save this email</strong> so you can reach us fast if you ever need help.</p>
+ <p>✅ <strong>Tell a friend or neighbor</strong>—every new member makes our collective 
+voice stronger against unfair insurance practices.</p>
+ <p>✅ <strong>Once you’re logged in, send us a copy of your policy.</strong> This is the 
+first step to protecting yourself. We’ll review it to make sure you have the proper coverage so 
+when a claim happens, there are no surprises.</p>
+ <p style="margin-top: 20px;"><strong>Welcome aboard, [First Name]—you’re now part of 
+the change.</strong></p>
+ <p style="font-weight: bold;">– The Insurances Ally Team</p>
+ </div>
+</body>
+</html>

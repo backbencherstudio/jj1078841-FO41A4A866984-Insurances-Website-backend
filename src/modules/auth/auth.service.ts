@@ -288,22 +288,22 @@ export class AuthService {
 
       // ----------------------------------------------------
       // // create otp code
-      const otp_token = await UcodeRepository.createToken({
-        userId: user.data.id,
-        isOtp: true,
-      });
+      // const otp_token = await UcodeRepository.createToken({
+      //   userId: user.data.id,
+      //   isOtp: true,
+      // });
 
-      // // send otp code to email
-      await this.mailService.sendOtpCodeToEmail({
-        email: email,
-        name: first_name || name || email, // Use first_name if available, fallback to name, then email
-        otp: otp_token,
-      });
+      // // // send otp code to email
+      // await this.mailService.sendOtpCodeToEmail({
+      //   email: email,
+      //   name: first_name || name || email, // Use first_name if available, fallback to name, then email
+      //   otp: otp_token,
+      // });
 
-      return {
-        success: true,
-        message: 'We have sent an OTP code to your email',
-      };
+      // return {
+      //   success: true,
+      //   message: 'We have sent an OTP code to your email',
+      // };
 
       // ----------------------------------------------------
 
@@ -316,7 +316,7 @@ export class AuthService {
       // Send verification email with token
       await this.mailService.sendVerificationLink({
         email,
-        name: email,
+        name: user.data.first_name,
         token: token.token,
         type: type,
       });
