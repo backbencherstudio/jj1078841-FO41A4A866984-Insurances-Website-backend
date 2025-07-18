@@ -14,12 +14,16 @@ import { MailProcessor } from './processors/mail.processor';
       // or
       transport: {
         host: appConfig().mail.host,
-        secure: false,
+        secure: true,
         auth: {
           user: appConfig().mail.user,
           pass: appConfig().mail.password,
         },
       },
+      // Debug output of mail credentials (non-sensitive except to confirm presence)
+      ...(process.env.NODE_ENV !== 'production' && {
+        logger: true,
+      }),
       defaults: {
         from: appConfig().mail.from,
       },

@@ -22,6 +22,13 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
 
+      # ----- Mail (SendGrid SMTP) -----
+      - MAIL_HOST=smtp.sendgrid.net
+      - MAIL_PORT=587
+      - MAIL_USERNAME=apikey           # literal string required by SendGrid
+      - MAIL_PASSWORD=${SENDGRID_API_KEY}   # set this in your host shell or .env file
+      - MAIL_FROM_NAME=notifications@yourdomain.com  # verified sender address
+
       - TURN_SERVER=turn:turnserver:3478
       - TURN_USERNAME=webrtc
       - TURN_PASSWORD=strongpassword

@@ -36,7 +36,9 @@ export class AuthService {
       }
 
       if (user.avatar) {
-        user['avatar_url'] ='https://backend.insurancesally.com/public/storage/avatar/' + user.avatar;
+        user['avatar_url'] = SojebStorage.url(
+          appConfig().storageUrl.avatar + user.avatar,
+        );
       }
 
       if (user) {
