@@ -57,9 +57,17 @@ export class UserProfileController {
       }
       return await this.userProfileService.update(req.user.userId, updateUserProfileDto);
     } catch (error) {
+      // Forward explicit BadRequestExceptions from the service
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      // Prisma duplicate-key error (service might miss it)
       if (error.code === 'P2002') {
         throw new BadRequestException('Email already exists');
       }
+
+      // Fallback – unknown error
       throw new InternalServerErrorException('Error updating profile');
     }
   }

@@ -35,7 +35,7 @@ model User {
   status                    Int?                 @default(1) @db.SmallInt
   approved_at               DateTime?
   availability              String?
-  email                     String?              @unique
+  email                     String?              
   username                  String?              @unique
   name                      String?              @db.VarChar(255)
   first_name                String?              @db.VarChar(255)

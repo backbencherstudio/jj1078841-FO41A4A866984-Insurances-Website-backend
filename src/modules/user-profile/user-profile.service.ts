@@ -23,41 +23,23 @@ export class UserProfileService {
         const hashedPassword = await bcrypt.hash(updateUserProfileDto.password, 10);
         updateUserProfileDto.password = hashedPassword;
       }
-
+      
       // Remove confirm_password from DTO
       const { confirm_password, password, date_of_birth, ...updateData } = updateUserProfileDto;
-
-      // ------------------------------------------------------
-      // Validate e-mail uniqueness (prevent Prisma P2002 error)
-      // ------------------------------------------------------
-      if (updateData.email) {
-        const emailOwner = await this.prisma.user.findFirst({
-          where: {
-            email: updateData.email,
-            NOT: {
-              id: id,
-            },
-          },
-          select: { id: true },
-        });
-
-        if (emailOwner) {
-          throw new BadRequestException('Email already exists');
-        }
-      }
-
+      
       // Convert date_of_birth to ISO format if provided
       let dateOfBirth;
       if (date_of_birth) {
         dateOfBirth = new Date(date_of_birth).toISOString();
       }
-
+      
+      this.logger.debug('Hashing new password');
       // Check if user exists
       const existingUser = await this.prisma.user.findUnique({
         where: { id },
         select: { id: true }
       });
-
+      this.logger.debug('Existing user');
       if (!existingUser) {
         throw new NotFoundException(`User with ID ${id} not found`);
       }
