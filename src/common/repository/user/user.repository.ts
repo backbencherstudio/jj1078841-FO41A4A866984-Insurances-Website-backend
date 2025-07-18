@@ -442,7 +442,7 @@ export class UserRepository {
   }) {
     try {
       password = await bcrypt.hash(password, appConfig().security.salt);
-      const user = await prisma.user.update({
+      const result = await prisma.user.updateMany({
         where: {
           email: email,
         },
@@ -450,7 +450,7 @@ export class UserRepository {
           password: password,
         },
       });
-      return user;
+      return result;
     } catch (error) {
       throw error;
     }
