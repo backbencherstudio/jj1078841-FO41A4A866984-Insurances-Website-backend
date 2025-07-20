@@ -27,7 +27,8 @@ export class UserProfileController {
   @Patch()
   @UseInterceptors(FileInterceptor('avatar', {
     storage: diskStorage({
-      destination: './uploads/avatars',
+      // Save avatar images inside the publicly-served folder so they are immediately accessible
+      destination: './public/storage/avatar',
       filename: (req, file, callback) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
@@ -50,9 +51,12 @@ export class UserProfileController {
     @UploadedFile() file?: Express.Multer.File
   ) {
     try {
+
+      // console.log("updateUserProfileDto", updateUserProfileDto);
       // If file is uploaded, add the avatar URL to the DTO
       if (file) {
-        const avatarUrl = `/uploads/avatars/${file.filename}`;
+        // The file is stored under public/storage/avatar so it can be served via /storage/avatar/<filename>
+        const avatarUrl = `/storage/avatar/${file.filename}`;
         updateUserProfileDto.avatar = avatarUrl;
       }
       return await this.userProfileService.update(req.user.userId, updateUserProfileDto);

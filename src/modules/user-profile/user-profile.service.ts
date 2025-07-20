@@ -24,8 +24,34 @@ export class UserProfileService {
         updateUserProfileDto.password = hashedPassword;
       }
       
-      // Remove confirm_password from DTO
-      const { confirm_password, password, date_of_birth, ...updateData } = updateUserProfileDto;
+      // Extract special-case fields so they are not passed directly to Prisma
+      // 1. confirm_password – never stored
+      // 2. password         – hashed separately
+      // 3. date_of_birth    – cast to Date
+      // 4. full_name        – needs to be split into first_name & last_name (not stored directly)
+      const {
+        confirm_password,
+        password,
+        date_of_birth,
+        full_name,
+        ...otherFields
+      } = updateUserProfileDto;
+
+      // Prepare name parts if full_name provided (e.g. "John Doe Smith" -> first_name: "John", last_name: "Doe Smith")
+      let firstName: string | undefined;
+      let lastName: string | undefined;
+      if (full_name && full_name.trim().length > 0) {
+        const nameParts = full_name.trim().split(/\s+/);
+        firstName = nameParts.shift();
+        lastName = nameParts.length ? nameParts.join(' ') : undefined;
+      }
+
+      // Aggregate data that can safely be sent to Prisma
+      const updateData: Record<string, any> = {
+        ...otherFields,                       // remaining scalar fields from DTO
+        ...(firstName && { first_name: firstName }),
+        ...(lastName && { last_name: lastName }),
+      };
       
       // Convert date_of_birth to ISO format if provided
       let dateOfBirth;

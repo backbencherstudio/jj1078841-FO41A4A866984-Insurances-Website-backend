@@ -36,9 +36,7 @@ export class AuthService {
       }
 
       if (user.avatar) {
-        user['avatar_url'] = SojebStorage.url(
-          appConfig().storageUrl.avatar + user.avatar,
-        );
+        user['avatar_url'] = "https://backend.insurancesally.com" + user.avatar;
       }
 
       if (user) {
@@ -287,7 +285,7 @@ export class AuthService {
       // }
 
       // ----------------------------------------------------
-      // // create otp code
+      // create otp code
       // const otp_token = await UcodeRepository.createToken({
       //   userId: user.data.id,
       //   isOtp: true,
