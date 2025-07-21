@@ -55,4 +55,16 @@ export class CreateNewClaimInsuranceDto {
   @IsOptional()
   @IsString()
   carrier_correspondence?: string;
+  
+  @IsOptional()
+  @IsString()
+  fullName?: string;
+  
+  @IsOptional()
+  @IsString()
+  dateOfClaim?: string;
+  
+  @IsOptional()
+  @IsString()
+  agreeWithPolicy?: string;
 }

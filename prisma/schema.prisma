@@ -379,6 +379,9 @@ model Claim {
   insurance_company   String @default("unknown")
   policy_number       String @default("unknown")
   adjuster            String @default("unknown")
+  fullName            String?
+  dateOfClaim         String?
+  agreeWithPolicy     String?
   policy_docs         String?
   damage_photos       String[]
   signed_forms        String?
