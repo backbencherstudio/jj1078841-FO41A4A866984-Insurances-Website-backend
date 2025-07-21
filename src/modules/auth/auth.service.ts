@@ -39,6 +39,20 @@ export class AuthService {
         user['avatar_url'] = "https://backend.insurancesally.com" + user.avatar;
       }
 
+      // check active subscription
+      const activeSubscription = await this.prisma.subscription.findFirst({
+        where: {
+          user_id: userId,
+          status: 'active',
+          deleted_at: null,
+          current_period_end: {
+            gt: new Date(),
+          },
+        },
+      });
+
+      user['is_subscribed'] = !!activeSubscription;
+
       if (user) {
         return {
           success: true,
