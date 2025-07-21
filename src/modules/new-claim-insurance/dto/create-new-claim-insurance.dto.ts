@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsDateString, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsArray, IsDateString, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { Transform, Type } from 'class-transformer';
 
 export class CreateNewClaimInsuranceDto {
@@ -65,6 +65,6 @@ export class CreateNewClaimInsuranceDto {
   dateOfClaim?: string;
   
   @IsOptional()
-  @IsBoolean()
-  agreeWithPolicy?: boolean;
+  @IsString()
+  agreeWithPolicy?: string;
 }
