@@ -381,7 +381,7 @@ model Claim {
   adjuster            String @default("unknown")
   fullName            String?
   dateOfClaim         String?
-  agreeWithPolicy     String?
+  agreeWithPolicy     Boolean?
   policy_docs         String?
   damage_photos       String[]
   signed_forms        String?
