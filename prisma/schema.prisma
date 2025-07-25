@@ -86,7 +86,7 @@ model Ucode {
   token      String?
   email      String?
   expired_at DateTime?
-  user       User?     @relation(fields: [user_id], references: [id])
+  user       User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("ucodes")
 }
@@ -102,7 +102,7 @@ model Role {
   user_id          String?
   permission_roles PermissionRole[]
   role_users       RoleUser[]
-  user             User?            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user             User?            @relation(fields: [user_id], references: [id], onDelete: SetNull)
   permissions      Permission[]     @relation("PermissionToRole")
 
   @@map("roles")
@@ -174,8 +174,8 @@ model Notification {
   entity_id             String?
   read_at               DateTime?
   notification_event    NotificationEvent? @relation(fields: [notification_event_id], references: [id])
-  receiver              User?              @relation("receiver", fields: [receiver_id], references: [id])
-  sender                User?              @relation("sender", fields: [sender_id], references: [id])
+  receiver              User?              @relation("receiver", fields: [receiver_id], references: [id], onDelete: Cascade)
+  sender                User?              @relation("sender", fields: [sender_id], references: [id], onDelete: Cascade)
 
   @@map("notifications")
 }
@@ -188,7 +188,7 @@ model UserPaymentMethod {
   user_id           String?
   payment_method_id String?
   checkout_id       String?
-  user              User?     @relation(fields: [user_id], references: [id])
+  user              User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("user_payment_methods")
 }
@@ -214,7 +214,7 @@ model PaymentTransaction {
   invoice_url      String?   // Add this field for Stripe invoice URLs
   customer_id      String?   // Add this field for Stripe customer ID
   session_id       String?   // Add this field for Stripe session ID
-  user             User?     @relation(fields: [user_id], references: [id])
+  user             User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   claim_id        String?
   claim           Claim?    @relation(fields: [claim_id], references: [id])
@@ -235,8 +235,8 @@ model Message {
   message         String?
   attachment      Attachment?    @relation(fields: [attachment_id], references: [id])
   conversation    Conversation?  @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
-  receiver        User?          @relation("receiver", fields: [receiver_id], references: [id])
-  sender          User?          @relation("sender", fields: [sender_id], references: [id])
+  receiver        User?          @relation("receiver", fields: [receiver_id], references: [id], onDelete: SetNull)
+  sender          User?          @relation("sender", fields: [sender_id], references: [id], onDelete: SetNull)
 
   @@map("messages")
 }
@@ -263,8 +263,8 @@ model Conversation {
   deleted_at     DateTime?
   creator_id     String?
   participant_id String?
-  creator        User?     @relation("creator", fields: [creator_id], references: [id])
-  participant    User?     @relation("participant", fields: [participant_id], references: [id])
+  creator        User?     @relation("creator", fields: [creator_id], references: [id], onDelete: SetNull)
+  participant    User?     @relation("participant", fields: [participant_id], references: [id], onDelete: SetNull)
   messages       Message[]
 
   @@map("conversations")
@@ -352,7 +352,7 @@ model UserSetting {
   setting_id String?
   value      String?
   setting    Setting?  @relation(fields: [setting_id], references: [id])
-  user       User?     @relation(fields: [user_id], references: [id])
+  user       User?     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("user_settings")
 }
@@ -392,7 +392,7 @@ model Claim {
   depreciation_status String?
   mortgage_status    String?
   last_updated       DateTime
-  user               User     @relation(fields: [user_id], references: [id])
+  user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
    payments        PaymentTransaction[]
 
@@ -413,7 +413,7 @@ model Subscription {
   current_period_start DateTime
   current_period_end   DateTime
   cancel_at_period_end Boolean   @default(false)
-  user                 User      @relation(fields: [user_id], references: [id])
+  user                 User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("subscriptions")
 }
