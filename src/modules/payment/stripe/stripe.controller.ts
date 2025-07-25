@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards, Req, HttpException, HttpStatus, Headers, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Req, HttpException, HttpStatus, Headers, Param, Logger } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
@@ -11,6 +11,7 @@ import { StripePayment } from 'src/common/lib/Payment/stripe/StripePayment';
 
 @Controller('payment')
 export class StripeController {
+  private readonly logger = new Logger(StripeController.name);
   constructor(private readonly stripeService: StripeService) {}
 
   // check that user subscriber or not
@@ -134,8 +135,20 @@ export class StripeController {
     @Req() req: RawBodyRequest<Request>,
     @Res() res: Response
   ) {
+    this.logger.log('Webhook received');
+    if (!signature) {
+      this.logger.error('Stripe signature header is missing!');
+      return res.status(400).send('Stripe signature header is missing!');
+    }
+    if (!req.rawBody) {
+      this.logger.error('Raw body not found on request. Make sure rawBody is enabled in main.ts');
+      return res.status(400).send('Raw body not found on request.');
+    }
+    this.logger.log(`Received signature. Raw body size: ${req.rawBody.length}`);
+
     try {
       const event = await this.stripeService.constructWebhookEvent(req.rawBody, signature);
+      this.logger.log(`Webhook event constructed: ${event.id} (${event.type})`);
   
       switch (event.type) {
         case 'checkout.session.completed':
@@ -178,10 +191,8 @@ export class StripeController {
   
       return res.json({ received: true });
     } catch (error) {
-      throw new HttpException(
-        `Webhook Error: ${error.message}`,
-        HttpStatus.BAD_REQUEST
-      );
+      this.logger.error(`Error in webhook handler: ${error.message}`, error.stack);
+      return res.status(400).send(`Webhook Error: ${error.message}`);
     }
   }
 }

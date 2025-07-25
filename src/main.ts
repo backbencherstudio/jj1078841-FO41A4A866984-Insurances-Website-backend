@@ -5,8 +5,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { join } from 'path';
-import * as bodyParser from 'body-parser';
-// import express from 'express';
+import * as express from 'express';
 // internal imports
 import { AppModule } from './app.module';
 import { CustomExceptionFilter } from './common/exception/custom-exception.filter';
@@ -16,21 +15,28 @@ import { initializeUploadDirectories } from './common/utils/upload.utils';
 // import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    rawBody: true,
-  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Initialize upload directories
   initializeUploadDirectories();
 
-  // Handle raw body for webhooks
-  // app.use('/payment/stripe/webhook', express.raw({ type: 'application/json' }));
-
   app.setGlobalPrefix('api');
   app.enableCors();
   app.use(helmet());
-  app.use(bodyParser.json({ limit: '50mb' }));
-  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
+  // Use a custom verify function to make the raw body available
+  // for all JSON requests. This is needed for Stripe's webhook signature
+  // verification.
+  app.use(
+    express.json({
+      limit: '50mb',
+      verify: (req: any, res, buf) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
+
+  app.use(express.urlencoded({ limit: '50mb', extended: true }));
   app.useStaticAssets(join(__dirname, '..', 'public'), {
     index: false,
     prefix: '/public',

@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import Stripe from 'stripe';
 import appConfig from '../../../config/app.config';
@@ -6,6 +6,7 @@ import appConfig from '../../../config/app.config';
 
 @Injectable()
 export class StripeService {
+  private readonly logger = new Logger(StripeService.name);
   private stripe: Stripe;
   private readonly PRODUCT_IDS = {
     month: 'monthly_subscription_product',
@@ -86,6 +87,7 @@ async constructWebhookEvent(payload: Buffer, signature: string) {
 
   async handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
       try {
+        this.logger.log('Handling checkout session completed event...');
         
         // Retrieve the subscription details
         const subscription: Stripe.Subscription = await this.stripe.subscriptions.retrieve(
@@ -93,25 +95,25 @@ async constructWebhookEvent(payload: Buffer, signature: string) {
           { expand: ['items.data.price.product'] }
         );
 
-        // console.log("subscription",subscription)
-        // console.log(typeof subscription.current_period_start)
+        this.logger.log(`Retrieved subscription: ${subscription.id}`);
     
         // Create subscription record in database
-        await this.prisma.subscription.create({
+        const createdSubscription = await this.prisma.subscription.create({
           data: {
             user_id: session.client_reference_id,
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: session.subscription as string,
             status: subscription.status,
-            plan_type: Object.keys(this.PRODUCT_IDS).find(key => this.PRODUCT_IDS[key] === (subscription.items.data[0].price.product as any).name) || 'monthly',
+            plan_type: subscription.items.data[0].price.nickname || 'monthly',
             current_period_start: new Date((subscription as any).current_period_start * 1000),
             current_period_end: new Date((subscription as any).current_period_end * 1000),
           },
         });
 
-        // console.log(response);
+        this.logger.log(`Created subscription in database: ${createdSubscription}`);
     
       } catch (error) {
+        this.logger.error('Failed to process subscription', error.stack);
         throw new HttpException(
           'Failed to process subscription',
           HttpStatus.INTERNAL_SERVER_ERROR
@@ -181,7 +183,10 @@ async constructWebhookEvent(payload: Buffer, signature: string) {
 
   async handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     try {
-      await this.prisma.subscription.update({
+      this.logger.log(`Handling subscription update for: ${subscription.id}`);
+      // Use updateMany to avoid an error if the subscription doesn't exist yet.
+      // This can happen due to webhook race conditions.
+      await this.prisma.subscription.updateMany({
         where: {
           stripe_subscription_id: subscription.id,
         },
@@ -191,8 +196,11 @@ async constructWebhookEvent(payload: Buffer, signature: string) {
           current_period_end: new Date((subscription as any).current_period_end * 1000),
         },
       });
+      this.logger.log(`Subscription update handler finished for: ${subscription.id}`);
     } catch (error) {
-      throw new HttpException('Failed to update subscription', HttpStatus.INTERNAL_SERVER_ERROR);
+      // Log the error but do not re-throw. This prevents a single failed update
+      // from blocking other events in the same webhook payload.
+      this.logger.error(`Error in handleSubscriptionUpdated for ${subscription.id}: ${error.message}`, error.stack);
     }
   }
 
