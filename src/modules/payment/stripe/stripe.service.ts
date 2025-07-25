@@ -67,12 +67,9 @@ async constructWebhookEvent(payload: Buffer, signature: string) {
       const subscription = await this.prisma.subscription.findFirst({
         where: {
           user_id: userId,
-          status: 'active',
+          status: { in: ['active', 'trialing', 'past_due'] },
           deleted_at: null,
-          current_period_end: {
-            gt: new Date()
-          }
-        }
+        },
       });
 
       return {
