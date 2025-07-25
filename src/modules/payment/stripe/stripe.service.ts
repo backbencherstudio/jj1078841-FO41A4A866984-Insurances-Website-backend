@@ -103,7 +103,7 @@ async constructWebhookEvent(payload: Buffer, signature: string) {
             stripe_customer_id: session.customer as string,
             stripe_subscription_id: session.subscription as string,
             status: subscription.status,
-            plan_type: subscription.items.data[0].price.nickname || 'monthly',
+            plan_type: Object.keys(this.PRODUCT_IDS).find(key => this.PRODUCT_IDS[key] === (subscription.items.data[0].price.product as any).name) || 'monthly',
             current_period_start: new Date((subscription as any).current_period_start * 1000),
             current_period_end: new Date((subscription as any).current_period_end * 1000),
           },
