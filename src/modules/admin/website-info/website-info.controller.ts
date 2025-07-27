@@ -50,6 +50,9 @@ export class WebsiteInfoController {
             return cb(null, `${randomName}${file.originalname}`);
           },
         }),
+        limits: {
+          fileSize: 50 * 1024 * 1024 // 50MB
+        }
       },
     ),
   )

@@ -163,6 +163,9 @@ export class AuthController {
           return cb(null, `${randomName}${file.originalname}`);
         },
       }),
+      limits: {
+        fileSize: 50 * 1024 * 1024 // 50MB
+      }
     }),
   )
   async updateUser(
