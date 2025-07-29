@@ -47,6 +47,16 @@ export class MailProcessor extends WorkerHost {
             context: job.data.context,
           });
           break;
+        case 'sendEmailToAdmin':
+          this.logger.log('Sending Notification to Admin');
+          await this.mailerService.sendMail({
+            to: job.data.to,
+            from: job.data.from,
+            subject: job.data.subject,
+            template: job.data.template,
+            context: job.data.context,
+          });
+          break;
         case 'sendVerificationLink':
           this.logger.log('Sending verification link to email');
 

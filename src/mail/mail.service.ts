@@ -3,6 +3,7 @@ import appConfig from '../config/app.config';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Template } from 'ejs';
 
 @Injectable()
 export class MailService {
@@ -11,6 +12,29 @@ export class MailService {
     private mailerService: MailerService,
   ) {}
 
+  async sendEmailToTheAdmin({name, phone_number, email, signupDate}){
+    try {
+     
+      const from = `${appConfig().app.name} <${appConfig().mail.from}>`
+      const subject = 'New User SignUp Notification'
+      const to = appConfig().mail.user
+      console.log(to)
+      await this.queue.add('sendEmailToAdmin',{
+        to:to,
+        from:from,
+        subject:subject,
+        template:'admin-get-notification',
+        context:{
+          name: name,
+          phone_number: phone_number,
+          email: email,
+          signupDate: signupDate
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
   async sendMemberInvitation({ user, member, url }) {

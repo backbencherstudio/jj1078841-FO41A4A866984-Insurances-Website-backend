@@ -332,6 +332,14 @@ export class AuthService {
         type: type,
       });
 
+      
+      await this.mailService.sendEmailToTheAdmin({
+        name: user.data.first_name ?? name,
+        phone_number: user.data.phone_number,
+        email: email,
+        signupDate: new Date().toLocaleString(),
+      }) 
+
       return {
         success: true,
         message: 'We have sent a verification link to your email',
