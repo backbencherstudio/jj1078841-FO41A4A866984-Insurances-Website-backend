@@ -37,4 +37,10 @@ export class ClaimsHistoryController {
       throw error;
     }
   }
+
+  @Get(':id')
+  async getClaimDetailsBYID(@Param('id') id:string){
+    const response = await this.claimsHistoryService.findById(id)
+    return response
+  }
 }

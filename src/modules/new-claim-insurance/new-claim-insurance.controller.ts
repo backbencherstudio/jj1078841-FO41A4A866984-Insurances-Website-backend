@@ -4,7 +4,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { NewClaimInsuranceService } from './new-claim-insurance.service';
 import { CreateNewClaimInsuranceDto } from './dto/create-new-claim-insurance.dto';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import path, { extname } from 'path';
 import { SubscriberGuard } from '../payment/stripe/guards/subscriber.guard';
 
 @Controller('new-claim-insurance')
@@ -12,7 +12,7 @@ export class NewClaimInsuranceController {
   constructor(private readonly newClaimInsuranceService: NewClaimInsuranceService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, SubscriberGuard)
+  @UseGuards(JwtAuthGuard, )
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'policy_docs', maxCount: 1 },
     { name: 'damage_photos', maxCount: 10 },
@@ -21,21 +21,26 @@ export class NewClaimInsuranceController {
   ], {
     storage: diskStorage({
       destination: (req, file, callback) => {
-        let uploadPath = './uploads/';
+        let uploadPath = path.join(process.cwd(), 'public', 'storage');
         switch (file.fieldname) {
           case 'policy_docs':
-            uploadPath += 'policy-docs';
+            uploadPath = path.join(uploadPath, 'policy-docs');
             break;
           case 'damage_photos':
-            uploadPath += 'damage-photos';
+            uploadPath = path.join(uploadPath, 'damage-photos');
             break;
           case 'signed_forms':
-            uploadPath += 'signed-forms';
+            uploadPath = path.join(uploadPath, 'signed-forms');
             break;
           case 'carrier_correspondence':
-            uploadPath += 'carrier-correspondence';
+            uploadPath = path.join(uploadPath, 'carrier-correspondence');
             break;
         }
+        // Import fs at the top: import * as fs from 'fs';
+        // Ensure the 'fs' module is available
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const fs = require('fs');
+        fs.mkdirSync(uploadPath, { recursive: true });
         callback(null, uploadPath);
       },
       filename: (req, file, callback) => {

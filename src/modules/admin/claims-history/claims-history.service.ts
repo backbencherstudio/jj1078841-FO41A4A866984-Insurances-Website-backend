@@ -63,4 +63,17 @@ export class ClaimsHistoryService {
       }
     });
   }
+
+  async findById(id:string){
+    try {
+      const claimDetails = await this.prisma.claim.findFirst({
+        where:{
+          id:id
+        }
+      })
+      console.log(claimDetails)
+    } catch (error) {
+      
+    }
+  }
 }

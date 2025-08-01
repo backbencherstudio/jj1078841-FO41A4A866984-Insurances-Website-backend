@@ -48,10 +48,10 @@ export class DashboardService {
           lastUpdated: claim.last_updated,
         },
         documentHub: {
-          policyDocs: claim.policy_docs,
-          damagePhotos: claim.damage_photos,
-          signedForms: claim.signed_forms,
-          carrierCorrespondence: claim.carrier_correspondence,
+          policyDocs: buildFileUrl('policy_docs', claim.policy_docs),
+          damagePhotos: (claim.damage_photos || []).map((f: string) => buildFileUrl('damage_photos', f)),
+          signedForms: buildFileUrl('signed_forms', claim.signed_forms),
+          carrierCorrespondence: buildFileUrl('carrier_correspondence', claim.carrier_correspondence),
         },
         paymentTracker: {
           acvStatus: claim.acv_status,
@@ -94,4 +94,19 @@ export class DashboardService {
       throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
+}
+
+// At the top of your controller
+const PUBLIC_BASE = '/public/storage'; // or use your full URL if needed
+
+function buildFileUrl(type: string, filename: string | null) {
+  if (!filename) return null;
+  let folder = '';
+  switch (type) {
+    case 'policy_docs': folder = 'policy-docs'; break;
+    case 'damage_photos': folder = 'damage-photos'; break;
+    case 'signed_forms': folder = 'signed-forms'; break;
+    case 'carrier_correspondence': folder = 'carrier-correspondence'; break;
+  }
+  return `${PUBLIC_BASE}/${folder}/${filename}`;
 }
