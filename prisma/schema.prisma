@@ -392,9 +392,11 @@ model Claim {
   depreciation_status String?
   mortgage_status    String?
   last_updated       DateTime
+  claim_timeline     String?
+  
   user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-   payments        PaymentTransaction[]
+  payments        PaymentTransaction[]
 
   @@map("claims")
 }

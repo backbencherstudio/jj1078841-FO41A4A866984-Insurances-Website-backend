@@ -21,7 +21,7 @@ export class MailService {
 
       let msgText = message;
       if (typeof message === 'object' && message.message) {
-        msgText = message.message; // ✅ শুধু ভিতরের টেক্সট নেবে
+        msgText = message.message; 
       }
     
       await this.queue.add('sendMessageToAdmin',{

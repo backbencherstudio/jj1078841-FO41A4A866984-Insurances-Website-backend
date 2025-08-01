@@ -32,6 +32,7 @@ export class DashboardService {
           rcv_status: true,
           depreciation_status: true,
           mortgage_status: true,
+          claim_timeline:true
         },
       });
 
@@ -58,7 +59,8 @@ export class DashboardService {
           rcvStatus: claim.rcv_status,
           depreciation: claim.depreciation_status,
           mortgageEndorsement: claim.mortgage_status,
-        }
+        },
+        claimTimeline: claim.claim_timeline
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
