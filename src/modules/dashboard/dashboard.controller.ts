@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus, Req, Request } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { CreateDashboardDto } from './dto/create-dashboard.dto';
 import { UpdateDashboardDto } from './dto/update-dashboard.dto';
@@ -6,11 +6,11 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 
 @Controller('dashboard')
+@UseGuards(JwtAuthGuard)
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get('claim-summary/:claimNumber')
-  @UseGuards(JwtAuthGuard)
   async getClaimSummary(@Param('claimNumber') claimNumber: string) {
     try {
       return await this.dashboardService.getClaimSummary(claimNumber);
@@ -20,5 +20,12 @@ export class DashboardController {
         error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
     } 
+  }
+
+  @Post('sentMessageToAdmin')
+  async setMessageTOAdmin(@Body() message:String, @Request() req){
+    const userId = req?.user?.userId
+    const response = await this.dashboardService.sendMessageToAdmin(message,userId)
+    return response
   }
 }

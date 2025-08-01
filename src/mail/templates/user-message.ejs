@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Message Notification</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; 
+  margin: 0 auto; background-color: #f4f4f4; padding: 20px;">
+
+  <div style="background: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    
+    <h2 style="color: #1a73e8; text-align: center;">📩 New Message from User</h2>
+    <p>Hello Admin,</p>
+    <p>A user has sent a message through the platform. Below are the details:</p>
+    
+    <h3 style="color: #1a73e8;">User Details</h3>
+    <ul style="list-style:none; padding:0;">
+      <li><strong>Email:</strong> <%= email %></li>
+      <li><strong>Phone Number:</strong> <%= phone_number %></li>
+    </ul>
+
+    <h3 style="color: #1a73e8;">Message</h3>
+    <div style="background:#f1f1f1; padding:10px; border-radius:5px; font-style:italic;">
+      <%= message %>
+    </div>
+
+    
+  </div>
+
+</body>
+</html>

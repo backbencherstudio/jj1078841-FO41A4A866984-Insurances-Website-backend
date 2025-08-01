@@ -12,6 +12,34 @@ export class MailService {
     private mailerService: MailerService,
   ) {}
 
+  async sendMessageToAdmin({email, phone_number, message}){
+    try {
+     
+      const from = `${appConfig().app.name} <${appConfig().mail.from}>`
+      const subject = 'User Requested Message'
+      const to = appConfig().mail.user
+
+      let msgText = message;
+      if (typeof message === 'object' && message.message) {
+        msgText = message.message; // ✅ শুধু ভিতরের টেক্সট নেবে
+      }
+    
+      await this.queue.add('sendMessageToAdmin',{
+        to:to,
+        from:from,
+        subject:subject,
+        template:'user-message',
+        context:{
+          phone_number: phone_number,
+          email: email,
+          message: msgText,
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   async sendEmailToTheAdmin({name, phone_number, email, signupDate}){
     try {
      
