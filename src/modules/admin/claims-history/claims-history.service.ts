@@ -70,6 +70,22 @@ export class ClaimsHistoryService {
       const claimDetails = await this.prisma.claim.findFirst({
         where: { id },
       });
+
+      const userDetails = await this.prisma.user.findFirst({
+        where: { id: claimDetails.user_id },
+        select:{
+          email: true,
+          first_name: true,
+          last_name: true,
+          phone_number: true,
+          address: true,
+          city: true,
+          state: true,
+          zip_code: true,
+          country: true
+        }
+      });
+      
   
       if (!claimDetails) {
         throw new NotFoundException('Claim not found');
@@ -77,6 +93,7 @@ export class ClaimsHistoryService {
   
       const result = {
         ...claimDetails,
+        user_details: userDetails,
         policy_docs: claimDetails.policy_docs
           ? buildFileUrl('policy_docs', claimDetails.policy_docs)
           : null,
