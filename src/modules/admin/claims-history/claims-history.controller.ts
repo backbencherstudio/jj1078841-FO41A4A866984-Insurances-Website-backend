@@ -8,8 +8,8 @@ import { Roles } from 'src/common/guard/role/roles.decorator';
 import { Role } from 'src/common/guard/role/role.enum';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import path, { extname } from 'path';
-
+import { extname } from 'path';
+import * as path from 'path';
 @Controller('admin/claims-history')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ADMIN)
