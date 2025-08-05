@@ -13,7 +13,7 @@ export class NewClaimInsuranceController {
   constructor(private readonly newClaimInsuranceService: NewClaimInsuranceService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, )
+  @UseGuards(JwtAuthGuard, SubscriberGuard)
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'policy_docs', maxCount: 1 },
     { name: 'damage_photos', maxCount: 10 },
