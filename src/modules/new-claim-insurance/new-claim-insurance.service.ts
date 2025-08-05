@@ -12,6 +12,12 @@ export class NewClaimInsuranceService {
       let dateOfLoss: Date;
       const dateInput = createNewClaimInsuranceDto.date_of_loss as string | Date;
       
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+
+      if (!user) {
+        throw new HttpException('User not found for this claim', HttpStatus.BAD_REQUEST);
+      }
+
       if (typeof dateInput === 'string' && dateInput.includes('/')) {
         const [month, day, year] = dateInput.split('/');
         const fullYear = year.length === 2 ? '20' + year : year;

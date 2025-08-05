@@ -12,7 +12,7 @@ export class NewClaimInsuranceController {
   constructor(private readonly newClaimInsuranceService: NewClaimInsuranceService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, SubscriberGuard)
+  @UseGuards(JwtAuthGuard, )
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'policy_docs', maxCount: 1 },
     { name: 'damage_photos', maxCount: 10 },
@@ -21,27 +21,45 @@ export class NewClaimInsuranceController {
   ], {
     storage: diskStorage({
       destination: (req, file, callback) => {
-        let uploadPath = path.join(process.cwd(), 'public', 'storage');
-        switch (file.fieldname) {
-          case 'policy_docs':
-            uploadPath = path.join(uploadPath, 'policy-docs');
-            break;
-          case 'damage_photos':
-            uploadPath = path.join(uploadPath, 'damage-photos');
-            break;
-          case 'signed_forms':
-            uploadPath = path.join(uploadPath, 'signed-forms');
-            break;
-          case 'carrier_correspondence':
-            uploadPath = path.join(uploadPath, 'carrier-correspondence');
-            break;
+        try {
+          if (!file || !file.fieldname) {
+            return callback(
+              new HttpException('Invalid file field name', HttpStatus.BAD_REQUEST),
+              null,
+            );
+          }
+      
+          const basePath = path.join(process.cwd(), 'public', 'storage');
+      
+          const folderMap = {
+            policy_docs: 'policy-docs',
+            damage_photos: 'damage-photos',
+            signed_forms: 'signed-forms',
+            carrier_correspondence: 'carrier-correspondence',
+          };
+      
+          const subFolder = folderMap[file.fieldname];
+      
+          if (!subFolder) {
+            return callback(
+              new HttpException('Unsupported file field', HttpStatus.BAD_REQUEST),
+              null,
+            );
+          }
+      
+          const uploadPath = path.join(basePath, subFolder);
+      
+          // Import this at the top: import * as fs from 'fs';
+          const fs = require('fs');
+          fs.mkdirSync(uploadPath, { recursive: true });
+      
+          callback(null, uploadPath);
+        } catch (err) {
+          callback(
+            new HttpException('Error setting upload path', HttpStatus.INTERNAL_SERVER_ERROR),
+            null,
+          );
         }
-        // Import fs at the top: import * as fs from 'fs';
-        // Ensure the 'fs' module is available
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const fs = require('fs');
-        fs.mkdirSync(uploadPath, { recursive: true });
-        callback(null, uploadPath);
       },
       filename: (req, file, callback) => {
         try {
