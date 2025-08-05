@@ -4,8 +4,9 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { NewClaimInsuranceService } from './new-claim-insurance.service';
 import { CreateNewClaimInsuranceDto } from './dto/create-new-claim-insurance.dto';
 import { diskStorage } from 'multer';
-import path, { extname } from 'path';
+import { extname } from 'path';
 import { SubscriberGuard } from '../payment/stripe/guards/subscriber.guard';
+import * as path from 'path';
 
 @Controller('new-claim-insurance')
 export class NewClaimInsuranceController {
