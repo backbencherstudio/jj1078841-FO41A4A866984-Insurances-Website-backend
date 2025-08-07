@@ -23,9 +23,9 @@ export class DashboardController {
   }
 
   @Post('sentMessageToAdmin')
-  async setMessageTOAdmin(@Body() message:String, @Request() req){
+  async setMessageTOAdmin(@Body() body:{message:String, claimId:String}, @Request() req){
     const userId = req?.user?.userId
-    const response = await this.dashboardService.sendMessageToAdmin(message,userId)
+    const response = await this.dashboardService.sendMessageToAdmin(body.message,userId, body.claimId)
     return response
   }
 }

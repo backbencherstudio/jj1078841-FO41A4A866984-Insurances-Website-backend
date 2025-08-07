@@ -11,12 +11,13 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import * as path from 'path';
 @Controller('admin/claims-history')
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ADMIN)
 export class ClaimsHistoryController {
   constructor(private readonly claimsHistoryService: ClaimsHistoryService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   findAll(
     @Query('search') search?: string,
     @Query('page') page: number = 1,
@@ -30,6 +31,8 @@ export class ClaimsHistoryController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   async remove(@Param('id') id: string) {
     try {
       await this.claimsHistoryService.remove(id);
@@ -42,12 +45,15 @@ export class ClaimsHistoryController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   async getClaimDetailsBYID(@Param('id') id:string){
     const response = await this.claimsHistoryService.findById(id)
     return response
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'policy_docs', maxCount: 1 },
     { name: 'damage_photos', maxCount: 10 },
@@ -112,6 +118,8 @@ export class ClaimsHistoryController {
   }
 
   @Patch(':id/timeline')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   async updateClaimTimeline(
     @Param('id') id: string,
     @Body() body: { claim_timeline: string }

@@ -32,7 +32,8 @@ export class DashboardService {
           rcv_status: true,
           depreciation_status: true,
           mortgage_status: true,
-          claim_timeline:true
+          claim_timeline:true,
+          message:true
         },
       });
 
@@ -60,7 +61,8 @@ export class DashboardService {
           depreciation: claim.depreciation_status,
           mortgageEndorsement: claim.mortgage_status,
         },
-        claimTimeline: claim.claim_timeline
+        claimTimeline: claim.claim_timeline,
+        claimMessages: claim.message
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -70,7 +72,7 @@ export class DashboardService {
     }
   }
 
-  async sendMessageToAdmin(message, userId){
+  async sendMessageToAdmin(message, userId, claimId){
 
     try {
 
@@ -82,8 +84,23 @@ export class DashboardService {
       if(!userExist){
         throw new HttpException('You are not logged in', HttpStatus.BAD_GATEWAY)
       }
-      await this.mailservice.sendMessageToAdmin({email: userExist.email, phone_number: userExist.phone_number, message})
+      await this.mailservice.sendMessageToAdmin({email: userExist.email, phone_number: userExist.phone_number, message, claimId})
+      
+      const claim = await this.prisma.claim.findFirst({
+        where: { 
+          claim_number: claimId 
+        },
+      })
+      if (!claim) throw new HttpException('Claim not found', HttpStatus.BAD_REQUEST);
 
+      const newMessage = await this.prisma.message.create({
+          data: {
+            sender_id: userId,
+            claim_id: claim.id, 
+            message: message,  
+            status: 'Send Successfully',
+          }
+        });
       return {
         status: 200,
         success: true,

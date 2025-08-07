@@ -12,7 +12,7 @@ export class MailService {
     private mailerService: MailerService,
   ) {}
 
-  async sendMessageToAdmin({email, phone_number, message}){
+  async sendMessageToAdmin({email, phone_number, message, claimId}){
     try {
      
       const from = `${appConfig().app.name} <${appConfig().mail.from}>`
@@ -33,6 +33,7 @@ export class MailService {
           phone_number: phone_number,
           email: email,
           message: msgText,
+          claimId:claimId
         }
       })
     } catch (error) {
