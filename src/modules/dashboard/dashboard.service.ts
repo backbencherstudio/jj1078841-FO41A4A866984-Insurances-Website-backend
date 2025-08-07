@@ -19,6 +19,7 @@ export class DashboardService {
           claim_number: claimNumber 
         },
         select: {
+          id:true,
           claim_number: true,
           status: true,
           carrier: true,
@@ -43,6 +44,7 @@ export class DashboardService {
 
       return {
         claimSummary: {
+          id: claim.id,
           claimNumber: claim.claim_number,
           status: claim.status,
           carrier: claim.carrier,
