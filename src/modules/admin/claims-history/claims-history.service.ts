@@ -117,6 +117,14 @@ export class ClaimsHistoryService {
   
   async updateClaim(id: string, updateClaimDto: UpdateClaimDto) {
     try {
+      const claim = await this.prisma.claim.findUnique({
+        where: { id },
+      });
+      
+      if (!claim) {
+        throw new Error('Claim not found');
+      }
+      
       const updated = await this.prisma.claim.update({
         where: { id },
         data: {
