@@ -11,6 +11,7 @@ export class MyClaimsService {
         user_id: userId
       },
       select: {
+        id:true,
         claim_number: true,
         policy_number: true,
         type_of_damage: true,
