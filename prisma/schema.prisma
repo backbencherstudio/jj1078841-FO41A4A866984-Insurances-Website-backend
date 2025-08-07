@@ -59,6 +59,7 @@ model User {
   accounts                  Account[]
   creator_conversations     Conversation[]       @relation("creator")
   participant_conversations Conversation[]       @relation("participant")
+  receiver_messages         Message[]            @relation("receiver")
   sender_messages           Message[]            @relation("sender")
   receiver_notifications    Notification[]       @relation("receiver")
   sender_notifications      Notification[]       @relation("sender")
@@ -72,6 +73,8 @@ model User {
   claims                    Claim[]  
 
   subscriptions         Subscription[]
+
+  claim_messages_sent  ClaimMessage[]  @relation("sender")
 
   @@map("users")
 }
@@ -221,6 +224,24 @@ model PaymentTransaction {
   @@map("payment_transactions")
 }
 
+model Message {
+  id              String         @id @default(cuid())
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @default(now())
+  deleted_at      DateTime?
+  status          MessageStatus? @default(PENDING)
+  sender_id       String?
+  receiver_id     String?
+  conversation_id String?
+  attachment_id   String?
+  message         String?
+  attachment      Attachment?    @relation(fields: [attachment_id], references: [id])
+  conversation    Conversation?  @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  receiver        User?          @relation("receiver", fields: [receiver_id], references: [id], onDelete: SetNull)
+  sender          User?          @relation("sender", fields: [sender_id], references: [id], onDelete: SetNull)
+
+  @@map("messages")
+}
 
 model Attachment {
   id         String    @id @default(cuid())
@@ -232,7 +253,7 @@ model Attachment {
   size       Int?
   file       String?
   file_alt   String?
- 
+  messages   Message[]
 
   @@map("attachments")
 }
@@ -246,7 +267,7 @@ model Conversation {
   participant_id String?
   creator        User?     @relation("creator", fields: [creator_id], references: [id], onDelete: SetNull)
   participant    User?     @relation("participant", fields: [participant_id], references: [id], onDelete: SetNull)
- 
+  messages       Message[]
 
   @@map("conversations")
 }
@@ -384,11 +405,12 @@ model Claim {
   state             String?
   zip_code          String?
   country           String?
+
+   claim_messages ClaimMessage[]
   
   user               User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   payments        PaymentTransaction[]
-  message         Message[]
 
   @@map("claims")
 }
@@ -412,7 +434,7 @@ model Subscription {
   @@map("subscriptions")
 }
 
-model Message {
+model ClaimMessage {
   id              String         @id @default(cuid())
   created_at      DateTime       @default(now())
   updated_at      DateTime       @default(now())
@@ -424,5 +446,5 @@ model Message {
   claim           Claim?         @relation(fields: [claim_id], references: [id])
   sender          User?          @relation("sender", fields: [sender_id], references: [id])
 
-  @@map("messages")
+  @@map("claim_messages")
 }

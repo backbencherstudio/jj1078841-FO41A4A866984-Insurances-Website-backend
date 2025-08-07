@@ -33,7 +33,7 @@ export class DashboardService {
           depreciation_status: true,
           mortgage_status: true,
           claim_timeline:true,
-          message:true
+          claim_messages:true
         },
       });
 
@@ -62,7 +62,7 @@ export class DashboardService {
           mortgageEndorsement: claim.mortgage_status,
         },
         claimTimeline: claim.claim_timeline,
-        claimMessages: claim.message
+        claimMessages: claim.claim_messages
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -93,7 +93,7 @@ export class DashboardService {
       })
       if (!claim) throw new HttpException('Claim not found', HttpStatus.BAD_REQUEST);
 
-      const newMessage = await this.prisma.message.create({
+      const newMessage = await this.prisma.claimMessage.create({
           data: {
             sender_id: userId,
             claim_id: claim.id, 
